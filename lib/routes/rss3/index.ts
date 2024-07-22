@@ -5,7 +5,7 @@ import ofetch from '@/utils/ofetch';
 export const route: Route = {
     path: '/:account/:network?/:tag?',
     categories: ['social-media'],
-    example: '/rss3/diygod.eth',
+    example: '/rss3/vitalik.eth',
     name: 'Account Activities',
     maintainers: ['DIYgod'],
     url: 'docs.rss3.io/api-reference#tag/decentralized/GET/decentralized/%7Baccount%7D',
@@ -17,64 +17,74 @@ export const route: Route = {
         },
         network: {
             description: 'Retrieve activities from the specified network.',
+            default: 'all',
             options: [
                 {
+                    value: 'all',
+                    label: 'All',
+                },
+                {
                     value: 'arbitrum',
-                    label: 'arbitrum',
+                    label: 'Arbitrum',
                 },
                 {
                     value: 'arweave',
-                    label: 'arweave',
+                    label: 'Arweave',
                 },
                 {
                     value: 'avax',
-                    label: 'avax',
+                    label: 'Avax',
                 },
                 {
                     value: 'base',
-                    label: 'base',
+                    label: 'Base',
                 },
                 {
                     value: 'binance-smart-chain',
-                    label: 'binance-smart-chain',
+                    label: 'Binance Smart Chain',
                 },
                 {
                     value: 'crossbell',
-                    label: 'crossbell',
+                    label: 'Crossbell',
                 },
                 {
                     value: 'ethereum',
-                    label: 'ethereum',
+                    label: 'Ethereum',
                 },
                 {
                     value: 'farcaster',
-                    label: 'farcaster',
+                    label: 'Farcaster',
                 },
                 {
                     value: 'gnosis',
-                    label: 'gnosis',
+                    label: 'Gnosis',
                 },
                 {
                     value: 'linea',
-                    label: 'linea',
+                    label: 'Linea',
                 },
                 {
                     value: 'optimism',
-                    label: 'optimism',
+                    label: 'Optimism',
                 },
                 {
                     value: 'polygon',
-                    label: 'polygon',
+                    label: 'Polygon',
                 },
                 {
                     value: 'vsl',
-                    label: 'vsl',
+                    label: 'VSL',
                 },
             ],
         },
         tag: {
             description: 'Retrieve activities from the specified tag.',
+            default: 'all',
             options: [
+                {
+                    value: 'all',
+                    label: 'All',
+                },
                 {
                     value: 'collectible',
                     label: 'collectible',
@@ -114,8 +124,8 @@ async function handler(ctx) {
     const { data } = await ofetch(
         `https://gi.rss3.io/decentralized/${account}?${new URLSearchParams({
             limit: '20',
-            ...(network && { network }),
-            ...(tag && { tag }),
+            ...(network && network !== 'all' && { network }),
+            ...(tag && tag !== 'all' && { tag }),
         })}`
     );
 
@@ -123,8 +133,8 @@ async function handler(ctx) {
         title: `${account} activities`,
         link: 'https://rss3.io',
         item: data.map((item) => ({
-            title: `${item.tag} ${item.type} action on ${item.network}`,
-            description: `From: ${item.from}<br/>To: ${item.to}`,
+            title: `New ${item.tag} ${item.type} action on ${item.network}`,
+            description: `New ${item.tag} ${item.type} action on ${item.network}<br /><br />From: ${item.from}<br/>To: ${item.to}`,
             link: item.actions?.[0]?.related_urls?.[0],
             guid: item.id,
             author: [
